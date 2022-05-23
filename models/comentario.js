@@ -19,7 +19,7 @@ const ComentarioSchema = new Schema({
     like: {
         type: Number,
         default: 0
-    }  
+    }
 
 })
 
