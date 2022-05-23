@@ -16,6 +16,10 @@ const AboutUseSchema = new Schema({
     type: String,
     required: [true, "La imagen es necesaria"],
   },
+  contratado: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 AboutUseSchema.method.toJSON = function () {
