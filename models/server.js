@@ -7,14 +7,14 @@ class Server{
     constructor() {
         this.app = express();
         this.port = process.env.PORT;
-        this.usuariosPath = 'api/usuarios';
-        this.comentariosPath = 'api/comentarios';
-        this.aboutUsesPath = 'api/aboutUses';
-        this.publicacionesPath = 'api/publicaciones';
+        this.usuariosPath = '/api/usuarios';
+        this.comentariosPath = '/api/comentarios';
+        this.aboutUsesPath = '/api/aboutUses';
+        this.publicacionesPath = '/api/publicaciones';
+        this.middleware();
         //Rutas
         this.routes();
 
-        this.middleware();
         this.conectarDB()
     
     }
@@ -38,7 +38,7 @@ class Server{
     
 
     routes() {
-        this.app.use(this.usuariosPath, require('../routes/usuarios'));
+        this.app.use(this.usuariosPath, require('../routes/usuarios.js'));
         this.app.use(this.comentariosPath, require('../routes/comentarios'));
         this.app.use(this.aboutUsesPath, require('../routes/aboutUses'));
         this.app.use(this.publicacionesPath, require('../routes/publicaciones'));
