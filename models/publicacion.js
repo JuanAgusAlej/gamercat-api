@@ -23,10 +23,13 @@ const PublicacionSchema = new Schema({
         ref: 'Comentario',
         default: null
     }],
-    like: {
-        type: Number,
-        default: 0
-    }
+    like: 
+        [{
+            type: Schema.Types.ObjectId,
+            ref: 'Usuario',
+            default: 0
+        }]
+    
 });
 
 module.exports = model('Publicacion', PublicacionSchema);
