@@ -51,10 +51,10 @@ const publicacionPost = async (req = request, res = response) => {
 
 const publicacionPut = async (req = request, res = response) => {
   const { id } = req.params;
-  console.log(id)
+  
     const texto = req.body.texto
 
-    const publicacion = Publicacion.findByIdAndUpdate(id, { texto }, { new: true });
+    const publicacion = await Publicacion.findByIdAndUpdate(id, { texto }, { new: true });
     res.status(201).json({
         msg: "put: se actualizo correctamente",
         publicacion,
@@ -65,7 +65,7 @@ const publicacionPut = async (req = request, res = response) => {
 const publicacionDelete = async (req = request, res = response) => {
   
     const { id } = req.params;
-    const publicacion = Publicacion.findByIdAndDelete(id);
+  const publicacion = await Publicacion.findByIdAndDelete(id);
     res.status(201).json({
         msg: "delete: se elimino correctamente",
         publicacion,
