@@ -31,5 +31,9 @@ const PublicacionSchema = new Schema({
         }]
     
 });
+PublicacionSchema.methods.toJSON = function () {
+    const { __v, ...resto } = this.toObject();
+    return resto;
+  };
 
 module.exports = model('Publicacion', PublicacionSchema);

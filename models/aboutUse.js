@@ -16,14 +16,20 @@ const AboutUseSchema = new Schema({
     type: String,
     required: [true, "La imagen es necesaria"],
   },
+  skill: [
+    {
+      type: String,
+      required: [true, "La habilidad es necesaria"],
+    }
+  ],
   contratado: {
     type: Boolean,
     default: true,
   },
 });
 
-AboutUseSchema.method.toJSON = function () {
-  const { __v, ...aboutUse } = this.toObject();
+AboutUseSchema.methods.toJSON = function () {
+  const { __v, contratado, ...aboutUse } = this.toObject();
   return aboutUse;
 };
 
