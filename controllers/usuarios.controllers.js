@@ -1,46 +1,81 @@
-const {response, request} = require('express');
+const { response, request } = require("express");
+const Usuario = require("../models/usuarios");
+const bcryptjs = require("bcryptjs");
+//==========================GET
+const usuariosGet = async (req = request, res = response) => {
+  //   const query = req.query; //toma las query que se envio en la ruta
+  const { limite = 5, desde = 0 } = req.query; //toma las query que se envio en la ruta
+  const query = { estado: true };
+  const [total, usuarios] = await Promise.all([
+    Usuario.countDocuments(query),
+    Usuario.find(query).skip(Number(desde)).limit(Number(limite)),
+  ]);
 
-const usuariosGet = (req = request, res = response) => {
-    
-    const query = req.query;//toma las query que se envio en la ruta
-    const {limit=5, size=5, page=1}= req.query;//toma las query que se envio en la ruta
+  res.status(201).json({
+    total,
+    usuarios,
+  });
+};
+//============================POST
+const usuariosPost = async (req = request, res = response) => {
+  const dato = req.body; //toma los datos que se envian
 
+  const { nombre, correo, password, rol } = dato;
 
-    res.status(201).json({
-        msg: 'get: mostar informacion',
-        limit,
-        size,
-        page,
-    });
-}
+  const usuario = new Usuario({ nombre, correo, password, rol });
 
-const usuariosPost = (req = request, res = response) => {
-    const dato = req.body;//toma los datos que se envian
+  //encriptar la contraseña
+  const salt = bcryptjs.genSaltSync();
+  usuario.password = bcryptjs.hashSync(password, salt);
 
-    res.json({
-        msg: 'post: crear informacion',
-        dato
-    });
-}
+  //guardar datos en la BD
+  await usuario.save();
 
-const usuariosPut = (req = request, res = response) => {
-    
-    const id = req.params.id;//toma el parametro que se envio en la ruta
+  res.json({
+    usuario,
+  });
+};
+//===============================PUT
+const usuariosPut = async (req = request, res = response) => {
+  const id = req.params.id; //toma el parametro que se envio en la ruta
+  const { password, correo, google, ...resto } = req.body;
 
-    res.json({
-        msg: 'put: actualizar informacion'
-    });
-}
+  //validar password contra la bd
+  if (password) {
+    const salt = bcryptjs.genSaltSync();
+    resto.password = bcryptjs.hashSync(password, salt);
+  }
 
-const usuariosDelete =(req=request, res=response) => {
-    res.json({
-        msg: 'delete: eliminar informacion'
-    });
-}
+  //actualizar los datos
+  const usuario = await Usuario.findByIdAndUpdate(id, resto, { new: true });
+
+  res.json({
+    usuario,
+  });
+};
+//==================================DELETE
+const usuarioDelete = async (req, res) => {
+  const id = req.params.id;
+
+  //Eliminar fisicamente el registro
+  // const usuarioBorrado = await Usuario.findByIdAndDelete(id);
+
+  //Inactivar el registro
+
+  const usuarioBorrado = await Usuario.findByIdAndUpdate(
+    id,
+    { estado: false },
+    { new: true }
+  );
+
+  res.json({
+    usuarioBorrado,
+  });
+};
 
 module.exports = {
-    usuariosGet,
-    usuariosPost,
-    usuariosPut,
-    usuariosDelete
-}
+  usuariosGet,
+  usuariosPost,
+  usuariosPut,
+  usuarioDelete,
+};
