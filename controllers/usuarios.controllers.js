@@ -1,33 +1,56 @@
 const { response, request } = require("express");
+const Usuario = require("../models/usuarios");
+const bcryptjs = require("bcryptjs");
 
-const usuariosGet = (req = request, res = response) => {
+const usuariosGet = async (req = request, res = response) => {
   //   const query = req.query; //toma las query que se envio en la ruta
-  const { limit = 5, nombre = "Sin Nombre", apikey, page = 1 } = req.query; //toma las query que se envio en la ruta
+  const { limite = 5, desde = 0 } = req.query; //toma las query que se envio en la ruta
+
+  const [total, usuarios] = await Promise.all([
+    Usuario.countDocuments(),
+    Usuario.find().skip(Number(desde)).limit(Number(limite)),
+  ]);
 
   res.status(201).json({
-    msg: "get: mostar informacion",
-    limit,
-    nombre,
-    apikey,
-    page,
+    total,
+    usuarios,
   });
 };
 
-const usuariosPost = (req = request, res = response) => {
+const usuariosPost = async (req = request, res = response) => {
   const dato = req.body; //toma los datos que se envian
 
+  const { nombre, correo, password, rol } = dato;
+
+  const usuario = new Usuario({ nombre, correo, password, rol });
+
+  //encriptar la contraseña
+  const salt = bcryptjs.genSaltSync();
+  usuario.password = bcryptjs.hashSync(password, salt);
+
+  //guardar datos en la BD
+  await usuario.save();
+
   res.json({
-    msg: "post: crear informacion",
-    dato,
+    usuario,
   });
 };
 
-const usuariosPut = (req = request, res = response) => {
+const usuariosPut = async (req = request, res = response) => {
   const id = req.params.id; //toma el parametro que se envio en la ruta
+  const { password, correo, google, ...resto } = req.body;
+
+  //validar password contra la bd
+  if (password) {
+    const salt = bcryptjs.genSaltSync();
+    resto.password = bcryptjs.hashSync(password, salt);
+  }
+
+  //actualizar los datos
+  const usuario = await Usuario.findByIdAndUpdate(id, resto, { new: true });
 
   res.json({
-    msg: "put: actualizar informacion",
-    id,
+    usuario,
   });
 };
 
