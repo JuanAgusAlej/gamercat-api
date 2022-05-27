@@ -21,10 +21,15 @@ const aboutUseGet = async (req=request, res=response)=>{
 }
 const aboutUsePut = async (req=request, res=response)=>{
     
-    const { id } = req.params.id;
-    const {name, email, ...resto} = req.body
+    const { id } = req.params;
+    const {name, email, contratado, ...resto} = req.body
     
-    const aboutUse = await AboutUse.findByIdAndUpdate(id, resto, { new: true });
+    let dato = {}
+    if(resto.linkedin) dato.linkedin = resto.linkedin
+    if(resto.imagen) dato.imagen = resto.imagen
+    if(resto.skill) dato.skill = resto.skill
+
+    const aboutUse = await AboutUse.findByIdAndUpdate(id, dato, { new: true });
 
     res.status(201).json({
         msg: "put: se guardo correctamente",
@@ -48,11 +53,11 @@ const aboutUsePost = async (req=request, res=response)=>{
     });
 
 }
-const aboutUseDelete =(req=request, res=response)=>{
+const aboutUseDelete = async (req=request, res=response)=>{
     
     const { id } = req.params;
     
-    const aboutUse = new AboutUse.findByIdAndUpdate(id, { contratado: false }, { new: true });
+    const aboutUse = await AboutUse.findByIdAndUpdate(id, { contratado: false }, { new: true });
     res.status(201).json({
         msg: "delete: se elimino correctamente",
         aboutUse,

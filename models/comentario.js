@@ -22,5 +22,8 @@ const ComentarioSchema = new Schema({
     }
 
 })
-
+ComentarioSchema.methods.toJSON = function () {
+    const { __v, ...resto } = this.toObject();
+    return resto;
+  };
 module.exports = model('Comentario', ComentarioSchema);

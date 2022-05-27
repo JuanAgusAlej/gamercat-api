@@ -1,7 +1,7 @@
 const AboutUse = require("../models/aboutUse");
 
-const emailExiste = async (correo) => {
-    const existeEmail = await AboutUse.findOne({ correo });
+const emailExiste = async (email) => {
+    const existeEmail = await AboutUse.findOne({ email });
     if (existeEmail) {
       throw new Error(`El correo ${correo} ya está registrado`);
     }

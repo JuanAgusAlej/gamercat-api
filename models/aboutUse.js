@@ -28,8 +28,8 @@ const AboutUseSchema = new Schema({
   },
 });
 
-AboutUseSchema.method.toJSON = function () {
-  const { __v, ...aboutUse } = this.toObject();
+AboutUseSchema.methods.toJSON = function () {
+  const { __v, contratado, ...aboutUse } = this.toObject();
   return aboutUse;
 };
 
