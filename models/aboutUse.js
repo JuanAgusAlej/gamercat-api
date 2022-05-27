@@ -16,6 +16,12 @@ const AboutUseSchema = new Schema({
     type: String,
     required: [true, "La imagen es necesaria"],
   },
+  skill: [
+    {
+      type: String,
+      required: [true, "La habilidad es necesaria"],
+    }
+  ],
   contratado: {
     type: Boolean,
     default: true,
