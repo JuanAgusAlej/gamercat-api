@@ -22,7 +22,7 @@ const PublicacionSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Comentario',
         default: null
-    }],
+    },],
     like: 
         [{
             type: Schema.Types.ObjectId,
