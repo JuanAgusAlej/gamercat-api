@@ -22,8 +22,18 @@ const usuarioExiste = async (id) => {
   }
 };
 
+const mismoUsuario = (id, uid) => {
+  
+  
+  if (uid === id) {
+    return true;
+  } 
+  return false;
+}
+
 module.exports = {
   esRoleValido,
   emailExiste,
   usuarioExiste,
+  mismoUsuario
 };
