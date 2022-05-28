@@ -7,19 +7,26 @@ const ComentarioSchema = new Schema({
     },
     usuario: {
         type: Schema.Types.ObjectId,
+        ref: 'Usuario',
+        required: [true, 'El usuario es necesario']
 
     },
     publicacion: {
         type: Schema.Types.ObjectId,
+        ref: 'Publicacion',
+        required: [true, 'La publicacion es necesaria']
     },
     fecha: {
         type: Date,
         default: Date.now()
     },
-    like: {
-        type: Number,
-        default: 0
-    }
+   
+    like: 
+        [{
+            type: Schema.Types.ObjectId,
+            ref: 'Usuario',
+            default: null
+        }]
 
 })
 ComentarioSchema.methods.toJSON = function () {
