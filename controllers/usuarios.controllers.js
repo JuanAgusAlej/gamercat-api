@@ -1,46 +1,91 @@
-const {response, request} = require('express');
-
-const usuariosGet = (req = request, res = response) => {
-    
-    const query = req.query;//toma las query que se envio en la ruta
-    const {limit=5, size=5, page=1}= req.query;//toma las query que se envio en la ruta
+const { response, request } = require("express");
+const Usuario = require("../models/usuario");
+const bcryptjs = require("bcryptjs");
+const { mismoUsuario } = require("../helpers/db-validators");
 
 
-    res.status(201).json({
-        msg: 'get: mostar informacion',
-        limit,
-        size,
-        page,
+const usuariosGet = async (req = request, res = response) => {
+  
+  const { limite = 5, desde = 0 } = req.query; 
+  const query = { estado: true };
+  const [total, usuarios] = await Promise.all([
+    Usuario.countDocuments(query),
+    Usuario.find(query).skip(Number(desde)).limit(Number(limite)),
+  ]);
+
+  res.status(201).json({
+    total,
+    usuarios,
+  });
+};
+
+
+const usuariosPost = async (req = request, res = response) => {
+  const dato = req.body; //toma los datos que se envian
+
+  const { nombre, correo, password } = dato;
+
+  const usuario = new Usuario({ nombre, correo, password });
+
+  //encriptar la contraseña
+  const salt = bcryptjs.genSaltSync();
+  usuario.password = bcryptjs.hashSync(password, salt);
+
+  //guardar datos en la BD
+  await usuario.save();
+
+  res.json({
+    usuario,
+  });
+};
+
+
+const usuariosPut = async (req = request, res = response) => {
+  const id = req.params.id; 
+  const uid = req.uid;
+  const { password, correo, google, ...resto } = req.body;
+
+  if (password) {
+    const salt = bcryptjs.genSaltSync();
+    resto.password = bcryptjs.hashSync(password, salt);
+  }
+  let usuario;
+  
+  console.log(mismoUsuario(id, uid));
+  if (mismoUsuario(id, uid)) {
+    usuario = await Usuario.findByIdAndUpdate(id, resto, { new: true });
+  } else {
+    return res.status(403).json({
+      
+      msg: "No tienes permiso para actualizar este usuario",
     });
-}
+  }
 
-const usuariosPost = (req = request, res = response) => {
-    const dato = req.body;//toma los datos que se envian
+  res.json({
+    usuario,
+  });
+};
 
-    res.json({
-        msg: 'post: crear informacion',
-        dato
-    });
-}
 
-const usuariosPut = (req = request, res = response) => {
-    
-    const id = req.params.id;//toma el parametro que se envio en la ruta
+const usuarioDelete = async (req, res) => {
+  const id = req.params.id;
 
-    res.json({
-        msg: 'put: actualizar informacion'
-    });
-}
+ 
 
-const usuariosDelete =(req=request, res=response) => {
-    res.json({
-        msg: 'delete: eliminar informacion'
-    });
-}
+  const usuarioBorrado = await Usuario.findByIdAndUpdate(
+    id,
+    { estado: false },
+    { new: true }
+  );
+
+  res.json({
+    usuarioBorrado,
+  });
+};
 
 module.exports = {
-    usuariosGet,
-    usuariosPost,
-    usuariosPut,
-    usuariosDelete
-}
+  usuariosGet,
+  usuariosPost,
+  usuariosPut,
+  usuarioDelete,
+};
