@@ -48,7 +48,7 @@ const comentarioPut = async (req = request, res = response) => {
          uid === userid
   );
 
-  console.log(dioLik);
+  
   if (dioLik) {
     comentario.like.splice(comentario.like.indexOf(uid => uid === userid), 1);
     console.log("diolik")

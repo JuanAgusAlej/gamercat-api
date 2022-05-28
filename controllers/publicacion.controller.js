@@ -89,7 +89,7 @@ const publicacionPut = async (req = request, res = response) => {
   );
 
 
-  console.log(dioLik);
+  
   if (dioLik) {
     publicacion.like.splice(publicacion.like.indexOf(uid => uid === userid), 1);
     console.log("diolik")
@@ -100,7 +100,7 @@ const publicacionPut = async (req = request, res = response) => {
   
     const publicacionActualizada = await Publicacion.findByIdAndUpdate(id, publicacion, { new: true });
     res.status(201).json({
-        msg: "put: se actualizo correctamente",
+        msg: "Se le dio megusta <3",
         publicacionActualizada,
     });
 };
