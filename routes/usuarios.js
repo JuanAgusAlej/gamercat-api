@@ -6,6 +6,7 @@ const {
   esRoleValido,
   emailExiste,
   usuarioExiste,
+  mismoUsuario,
 } = require("../helpers/db-validators");
 const {
   usuariosGet,
@@ -13,6 +14,7 @@ const {
   usuariosPut,
   usuarioDelete,
 } = require("../controllers/usuarios.controllers");
+const { tieneRole } = require("../middlewares/validar-roles");
 
 const router = Router();
 
@@ -28,7 +30,7 @@ router.post(
     ).isLength({ min: 6 }),
     check("correo", "No es un correo valido").isEmail(),
     check("correo").custom(emailExiste),
-    check("rol").custom(esRoleValido),
+    
     validarCampos,
   ],
   usuariosPost
@@ -40,7 +42,7 @@ router.put(
     validarJWT,
     check("id", "No es un id valido").isMongoId(),
     check("id").custom(usuarioExiste),
-    check("rol").custom(esRoleValido),
+       
     validarCampos,
   ],
   usuariosPut
@@ -50,7 +52,7 @@ router.delete(
   "/:id",
   [
     validarJWT,
-    // tieneRole("ADMIN_ROLE", "VENTA_ROLE"),
+    tieneRole("ADMIN_ROLE"),
     check("id", "No es un ID válido").isMongoId(),
     check("id").custom(usuarioExiste),
     validarCampos,

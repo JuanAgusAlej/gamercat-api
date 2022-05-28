@@ -1,10 +1,12 @@
 const { response, request } = require("express");
 const Usuario = require("../models/usuario");
 const bcryptjs = require("bcryptjs");
-//==========================GET
+const { mismoUsuario } = require("../helpers/db-validators");
+
+
 const usuariosGet = async (req = request, res = response) => {
-  //   const query = req.query; //toma las query que se envio en la ruta
-  const { limite = 5, desde = 0 } = req.query; //toma las query que se envio en la ruta
+  
+  const { limite = 5, desde = 0 } = req.query; 
   const query = { estado: true };
   const [total, usuarios] = await Promise.all([
     Usuario.countDocuments(query),
@@ -16,13 +18,14 @@ const usuariosGet = async (req = request, res = response) => {
     usuarios,
   });
 };
-//============================POST
+
+
 const usuariosPost = async (req = request, res = response) => {
   const dato = req.body; //toma los datos que se envian
 
-  const { nombre, correo, password, rol } = dato;
+  const { nombre, correo, password } = dato;
 
-  const usuario = new Usuario({ nombre, correo, password, rol });
+  const usuario = new Usuario({ nombre, correo, password });
 
   //encriptar la contraseña
   const salt = bcryptjs.genSaltSync();
@@ -35,32 +38,39 @@ const usuariosPost = async (req = request, res = response) => {
     usuario,
   });
 };
-//===============================PUT
+
+
 const usuariosPut = async (req = request, res = response) => {
-  const id = req.params.id; //toma el parametro que se envio en la ruta
+  const id = req.params.id; 
+  const uid = req.uid;
   const { password, correo, google, ...resto } = req.body;
 
-  //validar password contra la bd
   if (password) {
     const salt = bcryptjs.genSaltSync();
     resto.password = bcryptjs.hashSync(password, salt);
   }
-
-  //actualizar los datos
-  const usuario = await Usuario.findByIdAndUpdate(id, resto, { new: true });
+  let usuario;
+  
+  console.log(mismoUsuario(id, uid));
+  if (mismoUsuario(id, uid)) {
+    usuario = await Usuario.findByIdAndUpdate(id, resto, { new: true });
+  } else {
+    return res.status(403).json({
+      
+      msg: "No tienes permiso para actualizar este usuario",
+    });
+  }
 
   res.json({
     usuario,
   });
 };
-//==================================DELETE
+
+
 const usuarioDelete = async (req, res) => {
   const id = req.params.id;
 
-  //Eliminar fisicamente el registro
-  // const usuarioBorrado = await Usuario.findByIdAndDelete(id);
-
-  //Inactivar el registro
+ 
 
   const usuarioBorrado = await Usuario.findByIdAndUpdate(
     id,

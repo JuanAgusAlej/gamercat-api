@@ -16,7 +16,7 @@ const login = async (req, res = response) => {
       });
     }
 
-    //si el usuario esta activo
+    
     if (!usuario.estado) {
       return res.status(400).json({
         msg: "No es posible acceder a los datos",

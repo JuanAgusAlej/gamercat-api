@@ -16,14 +16,14 @@ const validarJWT = async (req, res = response, next) => {
 
     const usuarioAutenticado = await Usuario.findById(uid);
 
-    //si el usuario existe
+    
     if (!usuarioAutenticado) {
       return res.status(401).json({
         msg: "Token no válido - Usuario no encontrado",
       });
     }
 
-    //el usuario esta inactivo
+    
 
     if (!usuarioAutenticado.estado) {
       return res.status(401).json({
