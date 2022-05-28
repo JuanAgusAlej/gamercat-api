@@ -27,7 +27,7 @@ const PublicacionSchema = new Schema({
         [{
             type: Schema.Types.ObjectId,
             ref: 'Usuario',
-            default: 0
+            default: null
         }]
     
 });

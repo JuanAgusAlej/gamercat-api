@@ -7,7 +7,18 @@ const publicacionExiste = async (id) => {
     }
 
 }
+const existeId = async (id) => {
+    const publicacion = await Publicacion.findById(id);
+    if (!publicacion) {
+        const publicacionUid = await Publicacion.find({ usuario: id });
+        if (!publicacionUid) {
+            throw new Error('Publicacion no existe');
+        }
+        
+    }
+}
 
 module.exports = {
     publicacionExiste,
+    existeId
 }
