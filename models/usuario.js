@@ -14,8 +14,9 @@ const UsuarioSchema = Schema({
     type: String,
     required: [true, "La contraseña es obligatoria"],
   },
-  img: {
+  avatar: {
     type: String,
+    default:"https://i.pinimg.com/564x/ba/92/7f/ba927ff34cd961ce2c184d47e8ead9f6.jpg"
   },
   rol: {
     type: String,
