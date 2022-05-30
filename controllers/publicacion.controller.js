@@ -14,7 +14,7 @@ const publicacionGet = async (req = request, res = response) => {
       Publicacion.find()
         .limit(Number(limit))
         .skip(Number(size))
-        .populate("usuario", "nombre")
+        .populate("usuario", "nombre avatar")
         .populate("comentarios", "descripcion usuario like"),
     ]);
     res.json({
