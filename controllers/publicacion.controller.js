@@ -3,6 +3,7 @@ const {check} = require('express-validator');
 const { publicacionExiste, existeId } = require("../helpers/db-validators-publicacion");
 const { validarCampos } = require("../middlewares/validar-campos");
 const  Publicacion  = require("../models/publicacion");
+const { like } = require("./dioLike-controllers");
 
 const publicacionGet = async (req = request, res = response) => {
   const { limit = 5, size = 0, id, uid } = req.query;
@@ -78,31 +79,19 @@ const publicacionPost = async (req = request, res = response) => {
 
 const publicacionPut = async (req = request, res = response) => {
   const { id } = req.params;
-  
-  const userid = req.usuario._id
-  
-  const publicacion = await Publicacion.findById(id)
+ 
+  const likeController = await like(id, req.uid, req.like);
 
 
-  const dioLik = await publicacion.like.includes(uid => 
-         uid === userid
+  const publicacionActualizada = await Publicacion.findByIdAndUpdate(
+    id,
+    likeController,
+    { new: true }
   );
-
-
-  
-  if (dioLik) {
-    publicacion.like.splice(publicacion.like.indexOf(uid => uid === userid), 1);
-    console.log("diolik")
-  } else {
-    publicacion.like.push(userid);
-  }
-
-  
-    const publicacionActualizada = await Publicacion.findByIdAndUpdate(id, publicacion, { new: true });
-    res.status(201).json({
-        msg: "Se le dio megusta <3",
-        publicacionActualizada,
-    });
+  res.status(201).json({
+    msg: "Modifico el like",
+    publicacionActualizada,
+  });
 };
 
 
