@@ -5,6 +5,7 @@ const publicacionExiste = async (id) => {
     if (!publicacion) {
         throw new Error('Publicacion no existe');
     }
+    
 
 }
 const existeId = async (id) => {
