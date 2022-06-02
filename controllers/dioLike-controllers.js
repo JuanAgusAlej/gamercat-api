@@ -1,18 +1,27 @@
 
+const Comentario = require('../models/comentario');
 const Publicacion = require('../models/publicacion');
 
-const like = async (id, usid, dioLike) => {
-      
-  const publicacion = await Publicacion.findById(id);
-
+const like = async (id, usid, dioLike, likePublicacion) => {
+  
+    let buscarLike
+    if (likePublicacion) {
+        buscarLike = await Publicacion.findById(id);
+        
+    } else {
+        buscarLike = await Comentario.findById(id);
+        
+    } 
+    
+    console.log(dioLike)
   if (dioLike) {
-    const sacarLike = publicacion.like.filter((uid) => uid != usid);
-    publicacion.like = sacarLike;
+    const sacarLike = buscarLike.like.filter((uid) => uid != usid);
+    buscarLike.like = sacarLike;
   } else {
-    publicacion.like.push(usid);
+    buscarLike.like.push(usid);
     }
     
-    return publicacion
+    return buscarLike
 
 }
 
