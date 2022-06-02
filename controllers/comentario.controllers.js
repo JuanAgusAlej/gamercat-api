@@ -1,6 +1,7 @@
 const { response, request } = require("express");
 const Comentario = require("../models/comentario");
 const Publicacion = require("../models/publicacion");
+const { like } = require("./dioLike-controllers");
 
 const comentarioGet = (req = request, res = response) => {
    
@@ -38,30 +39,19 @@ const { idPost} = req.params;
 const comentarioPut = async (req = request, res = response) => {
 
   const { id } = req.params;
-  
-  const userid = req.usuario._id
-  
-  const comentario = await Comentario.findById(id)
+ 
+  const likeController = await like(id, req.uid, req.like, req.publicacion);
 
 
-  const dioLik = await comentario.like.includes(uid => 
-         uid === userid
+  const comentarioActualizada = await Comentario.findByIdAndUpdate(
+    id,
+    likeController,
+    { new: true }
   );
-
-  
-  if (dioLik) {
-    comentario.like.splice(comentario.like.indexOf(uid => uid === userid), 1);
-    console.log("diolik")
-  } else {
-    comentario.like.push(userid);
-  }
-
-  
-    const comentarioActualizada = await Comentario.findByIdAndUpdate(id, comentario, { new: true });
-    res.status(201).json({
-        msg: "put: se actualizo correctamente",
-        comentarioActualizada,
-    });
+  res.status(201).json({
+    msg: "Modifico el like",
+    comentarioActualizada,
+  });
 };
 const comentarioDelete = async (req = request, res = response) => {
   

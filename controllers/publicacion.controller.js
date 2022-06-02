@@ -80,7 +80,7 @@ const publicacionPost = async (req = request, res = response) => {
 const publicacionPut = async (req = request, res = response) => {
   const { id } = req.params;
  
-  const likeController = await like(id, req.uid, req.like);
+  const likeController = await like(id, req.uid, req.like, req.publicacion);
 
 
   const publicacionActualizada = await Publicacion.findByIdAndUpdate(
