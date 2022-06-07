@@ -13,12 +13,18 @@ const {
   usuariosPost,
   usuariosPut,
   usuarioDelete,
+  usuariosGetId,
 } = require("../controllers/usuarios.controllers");
 const { tieneRole } = require("../middlewares/validar-roles");
 
 const router = Router();
 
 router.get("/", usuariosGet);
+
+router.get("/:id", [
+  check("id", "El id no es valido").isMongoId(),
+    validarCampos
+], usuariosGetId);
 
 router.post(
   "/",
