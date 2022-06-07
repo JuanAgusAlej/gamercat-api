@@ -1,12 +1,6 @@
 const { response, request } = require("express");
-const { check } = require("express-validator");
-const {
-  publicacionExiste,
-  existeId,
-} = require("../helpers/db-validators-publicacion");
-const { validarCampos } = require("../middlewares/validar-campos");
+
 const Publicacion = require("../models/publicacion");
-const { like } = require("./dioLike-controllers");
 
 const publicacionGet = async (req = request, res = response) => {
   const { limit = 5, size = 0 } = req.query;
@@ -85,17 +79,17 @@ const publicacionPost = async (req = request, res = response) => {
 const publicacionPut = async (req = request, res = response) => {
   const { id } = req.params;
 
-  const likeController = await like(id, req.uid, req.like, req.publicacion);
+  // const likeController = await like(id, req.uid, req.like, req.publicacion);
 
-  const publicacionActualizada = await Publicacion.findByIdAndUpdate(
-    id,
-    likeController,
-    { new: true }
-  );
-  res.status(201).json({
-    msg: "Modifico el like",
-    publicacionActualizada,
-  });
+  // const publicacionActualizada = await Publicacion.findByIdAndUpdate(
+  //   id,
+  //   likeController,
+  //   { new: true }
+  // );
+  // res.status(201).json({
+  //   msg: "Modifico el like",
+  //   publicacionActualizada,
+  // });
 };
 
 const publicacionDelete = async (req = request, res = response) => {
