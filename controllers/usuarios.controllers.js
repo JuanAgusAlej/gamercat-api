@@ -19,6 +19,17 @@ const usuariosGet = async (req = request, res = response) => {
   });
 };
 
+const usuariosGetId = async (req = request, res = response) => {
+ 
+  const id = req.params.id;
+  const query = { estado: true };
+
+  const usuario = await Usuario.findById(id).where(query);
+
+  res.status(201).json({
+    usuario,
+  });
+};
 
 const usuariosPost = async (req = request, res = response) => {
   const dato = req.body; //toma los datos que se envian
@@ -88,4 +99,5 @@ module.exports = {
   usuariosPost,
   usuariosPut,
   usuarioDelete,
+  usuariosGetId
 };
