@@ -1,15 +1,18 @@
 const { response, request } = require("express");
-const {check} = require('express-validator');
-const { publicacionExiste, existeId } = require("../helpers/db-validators-publicacion");
+const { check } = require("express-validator");
+const {
+  publicacionExiste,
+  existeId,
+} = require("../helpers/db-validators-publicacion");
 const { validarCampos } = require("../middlewares/validar-campos");
-const  Publicacion  = require("../models/publicacion");
+const Publicacion = require("../models/publicacion");
 const { like } = require("./dioLike-controllers");
 
 const publicacionGet = async (req = request, res = response) => {
-  const { limit = 5, size = 0, id, uid } = req.query;
+  const { limit = 5, size = 0 } = req.query;
+  const {id} = req.params;
 
-  if (!id && !uid) {
-  
+  if (!id) {
     const [total, publicaciones] = await Promise.all([
       Publicacion.countDocuments(),
       Publicacion.find()
@@ -23,51 +26,53 @@ const publicacionGet = async (req = request, res = response) => {
       publicaciones,
     });
   } else if (id) {
-    
-  
-   
-    const publicacionId = await Publicacion.findById(id).populate("usuario", "nombre")
-    .populate("comentarios", "descripcion usuario like");
-      
-      
-      res.json({
-        publicacionId,
-      });
+    const idUbicado = req.idUbicado;
 
-  } else {
-    const query = { usuario: uid }
-    
+    switch (idUbicado) {
+      case "publicacion":
+        const publicacionId = await Publicacion.findById(id)
+          .populate("usuario", "nombre")
+          .populate("comentarios", "descripcion usuario like");
 
-    const [total, publicaciones] =await Promise.all([
-      Publicacion.countDocuments(query),
-      Publicacion.find(query)
-        .limit(Number(limit))
-        .skip(Number(size))
-        .populate("usuario", "nombre")
-        .populate("comentarios", "descripcion usuario like"),
-    ]);
-    
+        res.json({
+          publicacionId,
+        });
+        break;
 
-    res.json({
-      total,
-      publicaciones,
-    }); 
+      case "usuario":
+        const query = { usuario: id };
+
+        const [total, publicaciones] = await Promise.all([
+          Publicacion.countDocuments(query),
+          Publicacion.find(query)
+            .limit(Number(limit))
+            .skip(Number(size))
+            .populate("usuario", "nombre")
+            .populate("comentarios", "descripcion usuario like"),
+        ]);
+
+        res.json({
+          total,
+          publicaciones,
+        });
+        break;
+
+      default:
+        res.status(404).json({
+          ok: false,
+          msg: "El id no es valido",
+        });
+        break;
+    }
   }
-
-
-
 };
-
-
-
-
 
 const publicacionPost = async (req = request, res = response) => {
   const data = {
     texto: req.body.texto,
-    usuario:req.usuario._id
+    usuario: req.usuario._id,
   };
-  if(req.body.imagen) data.imagen = req.body.imagen 
+  if (req.body.imagen) data.imagen = req.body.imagen;
 
   const publicacion = new Publicacion(data);
   await publicacion.save();
@@ -79,9 +84,8 @@ const publicacionPost = async (req = request, res = response) => {
 
 const publicacionPut = async (req = request, res = response) => {
   const { id } = req.params;
- 
-  const likeController = await like(id, req.uid, req.like, req.publicacion);
 
+  const likeController = await like(id, req.uid, req.like, req.publicacion);
 
   const publicacionActualizada = await Publicacion.findByIdAndUpdate(
     id,
@@ -94,16 +98,13 @@ const publicacionPut = async (req = request, res = response) => {
   });
 };
 
-
 const publicacionDelete = async (req = request, res = response) => {
-  
-    const { id } = req.params;
+  const { id } = req.params;
   const publicacion = await Publicacion.findByIdAndDelete(id);
-    res.status(201).json({
-        msg: "delete: se elimino correctamente",
-        publicacion,
-    });
-
+  res.status(201).json({
+    msg: "delete: se elimino correctamente",
+    publicacion,
+  });
 };
 
 module.exports = {
@@ -111,5 +112,4 @@ module.exports = {
   publicacionPost,
   publicacionPut,
   publicacionDelete,
-    
 };
