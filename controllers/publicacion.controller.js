@@ -78,18 +78,29 @@ const publicacionPost = async (req = request, res = response) => {
 
 const publicacionPut = async (req = request, res = response) => {
   const { id } = req.params;
+  const texto = req.body.texto;
+  
+  const publicacion = await Publicacion.findById(id)
 
-  // const likeController = await like(id, req.uid, req.like, req.publicacion);
+  console.log(publicacion.usuario._id == req.uid);
 
-  // const publicacionActualizada = await Publicacion.findByIdAndUpdate(
-  //   id,
-  //   likeController,
-  //   { new: true }
-  // );
-  // res.status(201).json({
-  //   msg: "Modifico el like",
-  //   publicacionActualizada,
-  // });
+  if (publicacion.usuario._id == req.uid) {
+    
+    const publicacionActualizada = await Publicacion.findByIdAndUpdate(
+       id,
+       { texto },
+       { new: true }
+    );
+    res.status(201).json({
+      msg: "se actualizo el mensaje",
+      publicacionActualizada,
+    });
+  } else {
+    res.status(403).json({
+      msg: "No tienes permiso para esto",
+      
+    });
+  }
 };
 
 const publicacionDelete = async (req = request, res = response) => {

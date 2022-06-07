@@ -33,7 +33,7 @@ router.post("/", [
 
 router.put("/:id", [
   validarJWT,
-  check('id', 'El id no es valido').isMongoId(),
+  check('texto', "El texto es obligatorio").not().isEmpty(),
   check('id').custom(publicacionExiste),
   validarCampos
 ], publicacionPut);
