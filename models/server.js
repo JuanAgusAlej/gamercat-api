@@ -12,6 +12,7 @@ class Server {
     this.aboutUsesPath = "/api/aboutUses";
     this.publicacionesPath = "/api/publicaciones";
     this.authPath = "/api/auth";
+    this.like = "/api/like";
     this.middleware();
     //Rutas
     this.routes();
@@ -41,6 +42,8 @@ class Server {
     this.app.use(this.aboutUsesPath, require("../routes/aboutUses"));
     this.app.use(this.publicacionesPath, require("../routes/publicaciones"));
     this.app.use(this.authPath, require("../routes/auth"));
+    this.app.use(this.like, require("../routes/like"));
+
   }
 
   listen() {
