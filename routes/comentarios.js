@@ -23,7 +23,7 @@ router.post("/:idPost", [
 ], comentarioPost);
 router.put("/:id", [
   validarJWT,
-  check('id', 'El id no es valido').isMongoId(),
+  check("descripcion", "El descripcion es obligatorio").not().isEmpty(),
   check('id').custom(comentarioExiste),
   validarCampos
 ], comentarioPut);
