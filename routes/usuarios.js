@@ -14,12 +14,18 @@ const {
   usuariosPut,
   usuarioDelete,
   usuariosGetId,
+  usuariosGetBorrados
 } = require("../controllers/usuarios.controllers");
 const { tieneRole } = require("../middlewares/validar-roles");
 
 const router = Router();
 
 router.get("/", usuariosGet);
+router.get("/borrados", [
+  validarJWT,
+  tieneRole("ADMIN_ROLE"),
+  validarCampos
+], usuariosGetBorrados);
 
 router.get("/:id", [
   check("id", "El id no es valido").isMongoId(),
