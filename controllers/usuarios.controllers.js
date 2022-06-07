@@ -18,6 +18,20 @@ const usuariosGet = async (req = request, res = response) => {
     usuarios,
   });
 };
+const usuariosGetBorrados = async (req = request, res = response) => {
+  
+  const { limite = 5, desde = 0 } = req.query; 
+  const query = { estado: false };
+  const [total, usuarios] = await Promise.all([
+    Usuario.countDocuments(query),
+    Usuario.find(query).skip(Number(desde)).limit(Number(limite)),
+  ]);
+
+  res.status(201).json({
+    total,
+    usuarios,
+  });
+};
 
 const usuariosGetId = async (req = request, res = response) => {
  
@@ -99,5 +113,6 @@ module.exports = {
   usuariosPost,
   usuariosPut,
   usuarioDelete,
-  usuariosGetId
+  usuariosGetId,
+  usuariosGetBorrados
 };
