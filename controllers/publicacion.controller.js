@@ -63,17 +63,24 @@ const publicacionGet = async (req = request, res = response) => {
 
 const publicacionPost = async (req = request, res = response) => {
   const data = {
-    texto: req.body.texto,
     usuario: req.usuario._id,
   };
+  
+  if (req.body.texto) data.texto = req.body.texto;
   if (req.body.imagen) data.imagen = req.body.imagen;
 
-  const publicacion = new Publicacion(data);
-  await publicacion.save();
-  res.status(201).json({
-    msg: "post: se guardo correctamente",
-    publicacion,
-  });
+  if (data.texto || data.imagen) {
+    const publicacion = new Publicacion(data);
+    await publicacion.save();
+    res.status(201).json({
+      msg: "post: se guardo correctamente",
+      publicacion,
+    });
+  } else {
+    res.status(400).json({
+      msg: "Falta texto o imagen para publicar",
+    });
+  }
 };
 
 const publicacionPut = async (req = request, res = response) => {

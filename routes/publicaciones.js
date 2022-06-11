@@ -26,8 +26,7 @@ router.get("/:id", [
 ], publicacionGet);
 
 router.post("/", [
-  validarJWT,
-  check("texto", "El texto es obligatorio").not().isEmpty(),
+  validarJWT,  
   validarCampos
 ], publicacionPost);
 
