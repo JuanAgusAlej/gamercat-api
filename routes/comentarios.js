@@ -10,7 +10,6 @@ const { comentarioExiste } = require("../helpers/db-validators-comentarios");
 const { publicacionExiste } = require("../helpers/db-validators-publicacion");
 const { validarCampos } = require("../middlewares/validar-campos");
 const { validarJWT } = require("../middlewares/validar-jwt");
-const { dioLike } = require("../middlewares/validar-like");
 
 const router = Router();
 
@@ -24,9 +23,8 @@ router.post("/:idPost", [
 ], comentarioPost);
 router.put("/:id", [
   validarJWT,
-  check('id', 'El id no es valido').isMongoId(),
+  check("descripcion", "El descripcion es obligatorio").not().isEmpty(),
   check('id').custom(comentarioExiste),
-  dioLike,
   validarCampos
 ], comentarioPut);
 

@@ -11,8 +11,8 @@ const {
 
 const { publicacionExiste } = require("../helpers/db-validators-publicacion");
 const { validarCampos } = require("../middlewares/validar-campos");
+const { ubicarId } = require("../middlewares/validar-id");
 const { validarJWT } = require("../middlewares/validar-jwt");
-const { dioLike } = require("../middlewares/validar-like");
 
 const router = Router();
 
@@ -20,18 +20,20 @@ router.get("/", [
    
 ], publicacionGet);
 
+router.get("/:id", [
+  check("id", 'El id no es valido').isMongoId(),
+  ubicarId,
+], publicacionGet);
 
 router.post("/", [
-  validarJWT,
-  check("texto", "El texto es obligatorio").not().isEmpty(),
+  validarJWT,  
   validarCampos
 ], publicacionPost);
 
 router.put("/:id", [
   validarJWT,
-  check('id', 'El id no es valido').isMongoId(),
+  check('texto', "El texto es obligatorio").not().isEmpty(),
   check('id').custom(publicacionExiste),
-  dioLike,
   validarCampos
 ], publicacionPut);
 

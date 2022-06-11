@@ -3,7 +3,7 @@ const { Schema, model } = require('mongoose');
 const PublicacionSchema = new Schema({
     texto: {
         type: String,
-        required: [true, 'El texto es necesario']
+        default: null,
     },
     imagen: {
         type: String,

@@ -18,7 +18,32 @@ const usuariosGet = async (req = request, res = response) => {
     usuarios,
   });
 };
+const usuariosGetBorrados = async (req = request, res = response) => {
+  
+  const { limite = 5, desde = 0 } = req.query; 
+  const query = { estado: false };
+  const [total, usuarios] = await Promise.all([
+    Usuario.countDocuments(query),
+    Usuario.find(query).skip(Number(desde)).limit(Number(limite)),
+  ]);
 
+  res.status(201).json({
+    total,
+    usuarios,
+  });
+};
+
+const usuariosGetId = async (req = request, res = response) => {
+ 
+  const id = req.params.id;
+  const query = { estado: true };
+
+  const usuario = await Usuario.findById(id).where(query);
+
+  res.status(201).json({
+    usuario,
+  });
+};
 
 const usuariosPost = async (req = request, res = response) => {
   const dato = req.body; //toma los datos que se envian
@@ -88,4 +113,6 @@ module.exports = {
   usuariosPost,
   usuariosPut,
   usuarioDelete,
+  usuariosGetId,
+  usuariosGetBorrados
 };

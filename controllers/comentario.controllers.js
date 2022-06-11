@@ -1,7 +1,6 @@
 const { response, request } = require("express");
 const Comentario = require("../models/comentario");
 const Publicacion = require("../models/publicacion");
-const { like } = require("./dioLike-controllers");
 
 const comentarioGet = (req = request, res = response) => {
    
@@ -38,20 +37,28 @@ const { idPost} = req.params;
 };
 const comentarioPut = async (req = request, res = response) => {
 
-  const { id } = req.params;
- 
-  const likeController = await like(id, req.uid, req.like, req.publicacion);
-
-
-  const comentarioActualizada = await Comentario.findByIdAndUpdate(
-    id,
-    likeController,
-    { new: true }
-  );
-  res.status(201).json({
-    msg: "Modifico el like",
-    comentarioActualizada,
-  });
+   const { id } = req.params;
+  
+  const descripcion = req.body.descripcion;
+  
+  const comentario = await Comentario.findById(id);
+  if (comentario.usuario == req.uid) {
+    
+     const comentarioActualizada = await Comentario.findByIdAndUpdate(
+       id,
+       {descripcion},
+       { new: true }
+     );
+     res.status(201).json({
+       msg: "Modifico el like",
+       comentarioActualizada,
+     });
+  } else {
+    res.status(403).json({
+      msg: "No tienes permiso para esto",
+      
+    });
+  }
 };
 const comentarioDelete = async (req = request, res = response) => {
   
